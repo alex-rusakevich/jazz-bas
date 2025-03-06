@@ -1,20 +1,19 @@
-[project]
-name = "jass-bas"
-version = "0.0.1"
-description = "BASIC to Python compiler & executor"
-authors = [
-    {name = "Alexander Rusakevich",email = "mr.alexander.rusakevich@gmail.com"}
-]
-license = {text = "GPLv3"}
-readme = "README.md"
-requires-python = ">=3.11"
-dependencies = [
-]
-
 [tool.poetry]
-packages = [{include = "jass"}]
+name = "jazz-bas"
+version = "0.0.1"
+description = "BASIC to Python compiler & BASIC interpreter"
+authors = ["Alexander Rusakevich <mr.alexander.rusakevich@gmail.com>"]
+license = "GPLv3"
+readme = "README.md"
 
+[tool.poetry.dependencies]
+python = "^3.11"
+regex = "^2024.11.6"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.5"
 
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
+requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
