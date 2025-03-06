@@ -1,6 +1,8 @@
 from enum import Enum
 from re import compile as rec
-from jass_bas import TokenError
+from jass_bas.exceptions import TokenError
+from typing import List
+from collections import OrderedDict
 
 
 class TokenType(Enum):
@@ -8,12 +10,14 @@ class TokenType(Enum):
     STRING_LITERAL = 1
     NUMBER = 2
     SPEC_CHAR = 3
+    SPACE = 4
 
 
-RE_TOKEN_PATTERNS = {
-    TokenType.FUNC_NAME: rec(r""),
-    TokenType.STRING_LITERAL: rec(r"")
-}
+RE_TOKEN_PATTERNS = (
+    (TokenType.FUNC_NAME, rec(r"[\w\$\%\#]+")),
+    (TokenType.STRING_LITERAL, rec(r'\"([^\"]|\"\")*\"')),
+    (TokenType.SPACE, rec(r'\s+'))
+)
 
 
 class Token:
@@ -49,5 +53,7 @@ def tokenize(code: str) -> List[Token]:
                 break
         
         if not is_token_found:
-            raise TokenError("Unknown token at pos {}: {}"
-                .format(curr_byte, text[":16"]))
+            raise TokenError("Unknown token at pos {}: `{}...`"
+                .format(curr_byte, code[:16]))
+    
+    return tokens
