@@ -5,7 +5,8 @@ from typing import List
 import regex as re
 from regex import compile as rec
 
-from jazz_bas.exceptions import TokenError
+from jazz_bas.exceptions import NotATokenError
+from jazz_bas.utils import TextLoc
 
 KEYWORDS = "print end".split()
 
@@ -39,6 +40,8 @@ class Token:
 
 
 def tokenize(code: str) -> List[Token]:
+    original_code = code
+
     tokens = []
     curr_byte: int = 1
 
@@ -58,10 +61,9 @@ def tokenize(code: str) -> List[Token]:
                 break
 
         if not is_token_found:
-            raise TokenError(
-                "Unknown token at char #{}: `{}`...".format(
-                    curr_byte, code[:16].replace("\n", " ")
-                )
+            print(curr_byte)
+            raise NotATokenError(
+                "Unknown token at {}".format(TextLoc(original_code, curr_byte))
             )
 
     return tokens

@@ -17,3 +17,7 @@ pytest = "^8.3.5"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+jazzbasc = "jazz_bas.cli.jazzbasc:main"
+jazzbas = "jazz_bas.cli.jazzbas:main"
