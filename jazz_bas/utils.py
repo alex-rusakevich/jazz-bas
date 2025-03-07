@@ -53,3 +53,10 @@ def escape_basic_name(basic_name: str) -> str:
         name = re.sub(re.escape(ch) + r"\b", alias + "__", name)
 
     return name
+
+
+def get_item(arr, index):
+    try:
+        return arr[index]
+    except IndexError:
+        return None

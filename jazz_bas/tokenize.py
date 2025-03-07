@@ -8,7 +8,7 @@ from regex import compile as rec
 from jazz_bas.exceptions import NotATokenError
 from jazz_bas.utils import TextLoc
 
-KEYWORDS = "print end".split()
+KEYWORDS = "print end input".split()
 
 
 class TokenType(Enum):
