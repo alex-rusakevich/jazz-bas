@@ -1,1 +1,1 @@
-from jazz_bas.runtime.require_python import *  # noqa: F403
+from jazz_bas.runtime.script_requirements import *  # noqa: F403
