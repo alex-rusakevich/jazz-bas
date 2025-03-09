@@ -1,2 +1,2 @@
 INPUT "What's your name? ", name$
-PRINT "Hello,"; name1$
+PRINT "Hello,"; name$

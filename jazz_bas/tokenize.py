@@ -23,7 +23,8 @@ class TokenType(Enum):
 
 
 RE_TOKEN_PATTERNS = (
-    (TokenType.PY_CODE, rec(r"(\$python)(.*?)(\$end)", re.DOTALL)),
+    (TokenType.PY_CODE, rec(r"```(.*?)```", re.DOTALL)),
+    (TokenType.PY_CODE, rec(r"`(.*?)`")),
     (TokenType.KEYWORD, rec("|".join(KEYWORDS), re.IGNORECASE)),
     (TokenType.NAME_LITERAL, rec(r"[\w\$\%\#]+")),
     (TokenType.STRING_LITERAL, rec(r"\"([^\"]|\"\")*\"")),
@@ -59,7 +60,7 @@ def tokenize(code: str) -> List[Token]:
                 value = m.group()
 
                 if token_type is TokenType.PY_CODE:
-                    value = m.group(2)
+                    value = m.group(1)
 
                 tokens.append(
                     Token(value=value, token_type=token_type, start=curr_byte)
