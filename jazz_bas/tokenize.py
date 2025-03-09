@@ -58,8 +58,8 @@ def tokenize(code: str) -> List[Token]:
     while code:
         is_token_found = False
 
-        for token_type, re_precomp in RE_TOKEN_PATTERNS:
-            if m := re_precomp.match(code):
+        for token_type, re_precompiled in RE_TOKEN_PATTERNS:
+            if m := re_precompiled.match(code):
                 value = m.group()
 
                 if token_type is TokenType.PY_CODE:

@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import List
 
 from jazz_bas.tokenize import Token, TokenType
@@ -6,8 +7,14 @@ from jazz_bas.utils import escape_basic_name
 Command = List[Token]
 
 
+@dataclass
+class Command:
+    head: Token
+    children: List[Token | Command]
+
+
 def parse(tokens: List[Token]) -> List[Command]:
-    commands = []
+    all_commands = []
 
     while tokens:
         command = []
@@ -45,6 +52,9 @@ def parse(tokens: List[Token]) -> List[Command]:
 
             command.append(token)
 
-        commands.append(command)
+        all_commands.append(Command(
+            head=command[0],
+            children=command[1:]
+        ))
 
-    return commands
+    return all_commands
