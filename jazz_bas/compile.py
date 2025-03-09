@@ -1,13 +1,13 @@
 from typing import List
 
 from jazz_bas import MIN_JAZZ_BAS_VERSION, MIN_PYTHON_VERSION
-from jazz_bas.exceptions import UnexpectedTokenError
+from jazz_bas.exceptions import JassBassSyntaxError
 from jazz_bas.parse import Command, parse
 from jazz_bas.tokenize import TokenType, tokenize
-from jazz_bas.utils import get_item
+from jazz_bas.utils import TextLoc, get_item
 
 
-def jazz_compile_commands(commands: List[Command]) -> str:
+def jazz_compile_commands(commands: List[Command], original_code: str) -> str:
     py_code = (
         """
 from jazz_bas import runtime as _jbrt
@@ -15,7 +15,7 @@ from jazz_bas import runtime as _jbrt
 _jbrt.require_python({min_python})
 _jbrt.require_jazz_bas({min_jazz_bas})
     """.strip().format(min_python=MIN_PYTHON_VERSION, min_jazz_bas=MIN_JAZZ_BAS_VERSION)
-        + ("\n") * 2
+        + "\n" * 2
     )
 
     for command in commands:
@@ -57,11 +57,19 @@ _jbrt.require_jazz_bas({min_jazz_bas})
                 ) and it.token_type is TokenType.STRING_LITERAL:
                     message = it.value
 
-                    if it := get_item(command[2:], 1):
+                    if (
+                        it := get_item(command[2:], 1)
+                    ) and it.token_type is TokenType.SPEC_CHAR:
                         if it.value == ",":
                             message += "? "
                         elif it.value == ";":
                             pass
+                        else:
+                            raise JassBassSyntaxError(
+                                "Unexpected symbol {}".format(
+                                    TextLoc(original_code, it.start)
+                                )
+                            )
 
                 for token in command[2:]:
                     if token.token_type is TokenType.NAME_LITERAL:
@@ -71,11 +79,21 @@ _jbrt.require_jazz_bas({min_jazz_bas})
 
                 if len(variables) > 1:
                     py_code += f"({', '.join(variables)},) = input({message}).split()"
-                elif len(variables) == 1 and variables[0].endswith("__dollar"):
+                elif len(variables) == 1:
                     py_code += f"{variables[0]} = input({message})"
+                else:
+                    raise JassBassSyntaxError(
+                        "INPUT cannot be called with no args, error at {}".format(
+                            TextLoc(original_code, command[0].end)
+                        )
+                    )
+        elif command[0].token_type is TokenType.PY_CODE:
+            py_code += command[0].value
         else:
-            raise UnexpectedTokenError(
-                "Unexpected token at char #{}.".format(command[0].start)
+            curr_byte = command[0].start
+
+            raise JassBassSyntaxError(
+                "Unexpected token at {}".format(TextLoc(original_code, curr_byte))
             )
 
         py_code += "\n"
@@ -84,4 +102,4 @@ _jbrt.require_jazz_bas({min_jazz_bas})
 
 
 def jazz_compile(jazz_code: str) -> str:
-    return jazz_compile_commands(parse(tokenize(jazz_code)))
+    return jazz_compile_commands(parse(tokenize(jazz_code)), jazz_code)

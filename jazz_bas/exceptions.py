@@ -6,13 +6,9 @@ class CliError(JassBassError):
     pass
 
 
-class NotATokenError(JassBassError):
+class JassBassSyntaxError(JassBassError):
     pass
 
 
-class UnexpectedTokenError(JassBassError):
-    pass
-
-
-class UnsupportedPythonVersionError(JassBassError):
+class UnmetDependencyError(JassBassError):
     pass
