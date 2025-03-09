@@ -18,7 +18,7 @@ def parse(tokens: List[Token]) -> List[Command]:
 
             token = tokens.pop(0)
 
-            if token.token_type is TokenType.SPACE:
+            if token.token_type in (TokenType.SPACE, TokenType.COMMENT):
                 if "\n" in token.value:  # Make new line finish command
                     break
                 else:  # Skip spaces

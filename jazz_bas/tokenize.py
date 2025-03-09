@@ -20,9 +20,12 @@ class TokenType(Enum):
     SPEC_CHAR = 5
     SPACE = 6
     PY_CODE = 7
+    COMMENT = 8
 
 
 RE_TOKEN_PATTERNS = (
+    (TokenType.COMMENT, rec(r"'[^\"]*?(\n|$)")),
+    (TokenType.COMMENT, rec(r"^(comment|rem).*?(\n|$)", re.IGNORECASE)),
     (TokenType.PY_CODE, rec(r"```(.*?)```", re.DOTALL)),
     (TokenType.PY_CODE, rec(r"`(.*?)`")),
     (TokenType.KEYWORD, rec("|".join(KEYWORDS), re.IGNORECASE)),
