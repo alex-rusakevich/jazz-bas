@@ -9,13 +9,13 @@ from jazz_bas.utils import TextLoc, get_item
 
 def jazz_compile_commands(commands: List[Command], original_code: str) -> str:
     py_code = (
-        """
+            """
 from jazz_bas import runtime as _jbrt
 
 _jbrt.require_python({min_python})
 _jbrt.require_jazz_bas({min_jazz_bas})
-    """.strip().format(min_python=MIN_PYTHON_VERSION, min_jazz_bas=MIN_JAZZ_BAS_VERSION)
-        + "\n" * 2
+        """.strip().format(min_python=MIN_PYTHON_VERSION, min_jazz_bas=MIN_JAZZ_BAS_VERSION)
+            + "\n" * 2
     )
 
     for command in commands:
@@ -48,17 +48,17 @@ _jbrt.require_jazz_bas({min_jazz_bas})
 
                 py_code += ", ".join(parts)
                 py_code += ")"
-            if command[0].value == "input":
+            elif command[0].value == "input":
                 variables = []
                 message = "? "
 
                 if (
-                    it := get_item(command[1:], 0)
+                        it := get_item(command[1:], 0)
                 ) and it.token_type is TokenType.STRING_LITERAL:
                     message = it.value
 
                     if (
-                        it := get_item(command[2:], 1)
+                            it := get_item(command[2:], 1)
                     ) and it.token_type is TokenType.SPEC_CHAR:
                         if it.value == ",":
                             message += "? "
@@ -89,6 +89,26 @@ _jbrt.require_jazz_bas({min_jazz_bas})
                     )
         elif command[0].token_type is TokenType.PY_CODE:
             py_code += command[0].value
+        elif command[0].token_type is TokenType.NAME_LITERAL:
+            # Set value to a variable, e.g. name$ = "John"
+            if (it := get_item(command, 1)) and it.token_type is TokenType.SPEC_CHAR and it.value == '=':
+                if (value_to_set := get_item(command[1:], 1)) and value_to_set.token_type in (
+                        TokenType.STRING_LITERAL, TokenType.FLOAT, TokenType.INTEGER, TokenType.NAME_LITERAL) \
+                        and len(command) == 3:
+                    (dest, _, source) = command
+                    py_code += f"{dest.value} = {source.value}"
+                else:
+                    curr_byte = command[0].start
+
+                    raise JassBassSyntaxError(
+                        "Unexpected token at {}".format(TextLoc(original_code, curr_byte))
+                    )
+            else:
+                curr_byte = command[0].start
+
+                raise JassBassSyntaxError(
+                    "Unexpected token at {}".format(TextLoc(original_code, curr_byte))
+                )
         else:
             curr_byte = command[0].start
 

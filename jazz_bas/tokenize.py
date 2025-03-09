@@ -29,7 +29,7 @@ RE_TOKEN_PATTERNS = (
     (TokenType.STRING_LITERAL, rec(r"\"([^\"]|\"\")*\"")),
     (TokenType.FLOAT, rec(r"\d+\.\d+")),
     (TokenType.INTEGER, rec(r"\d+")),
-    (TokenType.SPEC_CHAR, rec(r"[\+\-\*\/\(\);,]")),
+    (TokenType.SPEC_CHAR, rec(r"[\+\-\*\/\(\);,=]")),
     (TokenType.SPACE, rec(r"\s+")),
 )
 
