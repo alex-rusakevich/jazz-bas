@@ -25,14 +25,23 @@ def parse(tokens: List[Token]) -> List[Command]:
                     continue
 
             if (
-                token.token_type is TokenType.NAME_LITERAL
-                or token.token_type is TokenType.KEYWORD
+                    token.token_type is TokenType.NAME_LITERAL
+                    or token.token_type is TokenType.KEYWORD
             ):
                 token.value = token.value.lower()  # BASIC ignores case
                 token.value = escape_basic_name(
                     token.value
                 )  # Convert BASIC names to python
                 # e.g. name$ -> name__dollar
+
+            # Convert BASIC's mod into %
+            if token.token_type is TokenType.KEYWORD and token.value == "mod":
+                token.value = "%"
+                token.token_type = TokenType.SPEC_CHAR
+            elif token.token_type is TokenType.SPEC_CHAR and token.value == "\\":
+                token.value = "//"
+            elif token.token_type is TokenType.SPEC_CHAR and token.value == "^":
+                token.value = "**"
 
             command.append(token)
 

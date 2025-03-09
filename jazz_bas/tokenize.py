@@ -8,7 +8,7 @@ from regex import compile as rec
 from jazz_bas.exceptions import JassBassSyntaxError
 from jazz_bas.utils import TextLoc
 
-KEYWORDS = "print end input".split()
+KEYWORDS = "print end input mod".split()
 
 
 class TokenType(Enum):
@@ -30,7 +30,7 @@ RE_TOKEN_PATTERNS = (
     (TokenType.STRING_LITERAL, rec(r"\"([^\"]|\"\")*\"")),
     (TokenType.FLOAT, rec(r"\d+\.\d+")),
     (TokenType.INTEGER, rec(r"\d+")),
-    (TokenType.SPEC_CHAR, rec(r"[\+\-\*\/\(\);,=]")),
+    (TokenType.SPEC_CHAR, rec(r"[\+\-\*\/\(\)\\;,=\^]")),
     (TokenType.SPACE, rec(r"\s+")),
 )
 

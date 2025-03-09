@@ -92,17 +92,18 @@ _jbrt.require_jazz_bas({min_jazz_bas})
         elif command[0].token_type is TokenType.NAME_LITERAL:
             # Set value to a variable, e.g. name$ = "John"
             if (it := get_item(command, 1)) and it.token_type is TokenType.SPEC_CHAR and it.value == '=':
-                if (value_to_set := get_item(command[1:], 1)) and value_to_set.token_type in (
-                        TokenType.STRING_LITERAL, TokenType.FLOAT, TokenType.INTEGER, TokenType.NAME_LITERAL) \
-                        and len(command) == 3:
-                    (dest, _, source) = command
-                    py_code += f"{dest.value} = {source.value}"
-                else:
-                    curr_byte = command[0].start
+                py_code += command[0].value
+                py_code += " = "
 
-                    raise JassBassSyntaxError(
-                        "Unexpected token at {}".format(TextLoc(original_code, curr_byte))
-                    )
+                for token in command[2:]:
+                    if token.token_type in (
+                            TokenType.STRING_LITERAL, TokenType.FLOAT, TokenType.INTEGER, TokenType.NAME_LITERAL,
+                            TokenType.SPEC_CHAR):
+                        py_code += token.value
+                    else:
+                        raise JassBassSyntaxError(
+                            "Unexpected token at {}".format(TextLoc(original_code, token.start))
+                        )
             else:
                 curr_byte = command[0].start
 
